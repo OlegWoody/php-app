@@ -50,14 +50,15 @@ class SubscriptionController extends Controller
         return new SubscriptionResource($subscription);
     }
 
-    public function update(UpdateSubscriberRequest $request, Subscriber $subscriber)
-    {
-        // Обновляем данные подписчика
-        $subscriber->update($request->validated());
+public function update(UpdateSubscriptionRequest $request, Subscription $subscription)
+{
+    // Обновляем данные подписки
+    $subscription->update($request->validated());
 
-        // Загружаем подписку и возвращаем результат
-        return new SubscriberResource($subscriber->fresh()->load('subscription'));
-    }
+    // Возвращаем обновленную подписку
+    return new SubscriptionResource($subscription);
+}
+
 
 
     public function destroy(Subscription $subscription)
