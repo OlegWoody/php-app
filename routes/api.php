@@ -5,25 +5,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\SubscriptionController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Группа маршрутов, доступных только для роли "admin"
+Route::group(['middleware' => ['keycloak:admin']], function () {
+    Route::post('subscribers', [SubscriberController::class, 'store']); // Создание подписчика
+    Route::put('subscribers/{subscriber}', [SubscriberController::class, 'update']); // Обновление подписчика
+    Route::delete('subscribers/{subscriber}', [SubscriberController::class, 'destroy']); // Удаление подписчика
+    Route::post('subscriptions', [SubscriptionController::class, 'store']); // Создание подписки
+    Route::put('subscriptions/{subscription}', [SubscriptionController::class, 'update']); // Обновление подписки
+    Route::delete('subscriptions/{subscription}', [SubscriptionController::class, 'destroy']); // Удаление подписки
 });
 
-// Route::resource('subscribers', \App\Http\Controllers\SubscriberController::class);
-
-Route::apiResource('subscribers', SubscriberController::class);
-Route::apiResource('subscriptions', SubscriptionController::class);
-Route::put('/subscribers/{subscriber}', [SubscriberController::class, 'update']);
-Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
+// Группа маршрутов, доступных для роли "user"
+Route::group(['middleware' => ['keycloak:user']], function () {
+    Route::get('subscribers', [SubscriberController::class, 'index']); // Получение списка подписчиков
+    Route::get('subscribers/{subscriber}', [SubscriberController::class, 'show']); // Просмотр подписчика
+    Route::get('subscriptions', [SubscriptionController::class, 'index']); // Получение списка подписок
+    Route::get('subscriptions/{subscription}', [SubscriptionController::class, 'show']); // Просмотр подписки
+});
